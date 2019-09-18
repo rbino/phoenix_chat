@@ -52,7 +52,8 @@ config :phoenix_chat, PhoenixChatWeb.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/phoenix_chat_web/views/.*(ex)$},
-      ~r{lib/phoenix_chat_web/templates/.*(eex)$}
+      ~r{lib/phoenix_chat_web/templates/.*(eex)$},
+      ~r{lib/phoenix_chat_web/live/.*(ex)$}
     ]
   ]
 

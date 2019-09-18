@@ -12,7 +12,10 @@ config :phoenix_chat, PhoenixChatWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "IEdww2zcwge8bXkHJXE5Bk68/MbfuRW/0z7gzd0Nfwm8DctDcmPVY9xXB8rOcyNw",
   render_errors: [view: PhoenixChatWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: PhoenixChat.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: PhoenixChat.PubSub, adapter: Phoenix.PubSub.PG2],
+  live_view: [
+    signing_salt: "mR/ZbnniWiKiZAVuH+62ItnqBZrrKMWr"
+  ]
 
 # Configures Elixir's Logger
 config :logger, :console,
