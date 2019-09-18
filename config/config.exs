@@ -7,18 +7,12 @@
 # General application configuration
 use Mix.Config
 
-config :live_view_demo,
-  ecto_repos: [LiveViewDemo.Repo]
-
 # Configures the endpoint
-config :live_view_demo, LiveViewDemoWeb.Endpoint,
+config :phoenix_chat, PhoenixChatWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "dummy_val_for_dev_env",
-  render_errors: [view: LiveViewDemoWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: LiveViewDemo.PubSub, adapter: Phoenix.PubSub.PG2],
-  live_view: [
-    signing_salt: "another_dummy_val_for_dev_env"
-  ]
+  secret_key_base: "IEdww2zcwge8bXkHJXE5Bk68/MbfuRW/0z7gzd0Nfwm8DctDcmPVY9xXB8rOcyNw",
+  render_errors: [view: PhoenixChatWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: PhoenixChat.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
