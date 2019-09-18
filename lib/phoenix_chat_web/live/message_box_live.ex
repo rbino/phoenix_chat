@@ -26,6 +26,7 @@ defmodule PhoenixChatWeb.MessageBoxLive do
       id: id,
       timestamp: DateTime.utc_now(),
       sender: sender,
+      destination: "#foo",
       text: "Ping"
     }
 
@@ -46,6 +47,7 @@ defmodule PhoenixChatWeb.MessageBoxLive do
       id: id,
       timestamp: DateTime.utc_now(),
       sender: sender,
+      destination: "#foo",
       text: "Pong"
     }
 

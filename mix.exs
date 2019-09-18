@@ -39,7 +39,8 @@ defmodule PhoenixChat.MixProject do
       {:phoenix_live_view, "~> 0.2.0"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+      {:uuid, "~> 1.1"}
     ]
   end
 end
