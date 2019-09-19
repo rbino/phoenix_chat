@@ -1,7 +1,9 @@
 defmodule PhoenixChat.Chat.Message do
   defstruct [
+    :id,
     :timestamp,
-    :user,
+    :sender,
+    :destination,
     :text
   ]
 end
