@@ -9,9 +9,8 @@ defmodule PhoenixChat.Application do
     # List all child processes to be supervised
     children = [
       # Start the endpoint when the application starts
-      PhoenixChatWeb.Endpoint
-      # Starts a worker by calling: PhoenixChat.Worker.start_link(arg)
-      # {PhoenixChat.Worker, arg},
+      PhoenixChatWeb.Endpoint,
+      {Phoenix.PubSub.PG2, name: :chans}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
