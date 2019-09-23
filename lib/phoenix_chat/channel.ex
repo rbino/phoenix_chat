@@ -13,6 +13,18 @@ defmodule PhoenixChat.Channel do
     ]
   end
 
+  def start_link(name) do
+    GenServer.start_link(__MODULE__, name)
+  end
+
+  def get_users(pid) do
+    GenServer.call(pid, :get_users)
+  end
+
+  def get_backlog(pid) do
+    GenServer.call(pid, :get_backlog)
+  end
+
   @impl true
   def init(chan) do
     :ok = Chat.subscribe_chan(chan)
