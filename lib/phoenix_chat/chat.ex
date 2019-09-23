@@ -1,5 +1,6 @@
 defmodule PhoenixChat.Chat do
   alias Phoenix.PubSub
+  alias PhoenixChat.Channels
   alias PhoenixChat.Chat.Leave
   alias PhoenixChat.Chat.Message
   alias PhoenixChat.Chat.Join
@@ -17,6 +18,8 @@ defmodule PhoenixChat.Chat do
   end
 
   def join_chan(chan, user) do
+    :ok = Channels.ensure(chan)
+
     user
     |> Join.new(chan)
     |> broadcast(chan)

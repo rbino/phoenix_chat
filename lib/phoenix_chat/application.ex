@@ -10,7 +10,9 @@ defmodule PhoenixChat.Application do
     children = [
       # Start the endpoint when the application starts
       PhoenixChatWeb.Endpoint,
-      {Phoenix.PubSub.PG2, name: :chans}
+      {Phoenix.PubSub.PG2, name: :chans},
+      {DynamicSupervisor, strategy: :one_for_one, name: PhoenixChat.ChannelsSupervisor},
+      PhoenixChat.Channels
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
