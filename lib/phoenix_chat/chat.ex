@@ -1,6 +1,7 @@
 defmodule PhoenixChat.Chat do
   alias Phoenix.PubSub
   alias PhoenixChat.Channels
+  alias PhoenixChat.Chat.ChangeTopic
   alias PhoenixChat.Chat.Leave
   alias PhoenixChat.Chat.Message
   alias PhoenixChat.Chat.Join
@@ -15,6 +16,14 @@ defmodule PhoenixChat.Chat do
 
   def broadcast(term, chan) do
     PubSub.broadcast(:chans, chan, term)
+  end
+
+  def change_chan_topic(chan, user, topic_text) do
+    :ok = Channels.ensure(chan)
+
+    user
+    |> ChangeTopic.new(chan, topic_text)
+    |> broadcast(chan)
   end
 
   def join_chan(chan, user) do
