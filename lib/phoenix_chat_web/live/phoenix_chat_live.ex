@@ -1,5 +1,5 @@
 defmodule PhoenixChatWeb.PhoenixChatLive do
-  use Phoenix.LiveView
+  use Phoenix.LiveView, container: {:section, class: "row h-100"}
 
   alias PhoenixChatWeb.ChatView
 

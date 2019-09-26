@@ -1,6 +1,49 @@
+$header-height: 150px;
+$header-margin-bottom: 1rem;
+$footer-height: 1rem;
+$message-form-height: 3rem;
 
 @import "../node_modules/bootstrap/scss/bootstrap";
 
 @import "./phoenix.css";
 
 @import "../../deps/phoenix_live_view/assets/css/live_view.css";
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+header {
+  height: $header-height;
+  margin-bottom: $header-margin-bottom;
+}
+
+main {
+  height: calc(100% - (#{$header-height} + #{$header-margin-bottom}) - #{$footer-height});
+  overflow: hidden;
+}
+
+#message-box-wrapper {
+  height: calc(100% - #{$message-form-height});
+}
+
+#message-form {
+    height: $message-form-height;
+}
+
+.message-time {
+    color: lighten($body-color, 20%);
+    font-size: $font-size-base * 0.8;
+}
+
+.user-nick {
+    color: darken($body-color, 25%);
+}
+
+.message-text {
+}
