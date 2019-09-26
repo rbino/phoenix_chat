@@ -1,6 +1,7 @@
 defmodule PhoenixChat.Channel do
   use GenServer
   alias PhoenixChat.Chat
+  alias PhoenixChat.Chat.ChangeTopic
   alias PhoenixChat.Chat.Join
   alias PhoenixChat.Chat.Leave
   alias PhoenixChat.Chat.Message
@@ -9,12 +10,17 @@ defmodule PhoenixChat.Channel do
   defmodule State do
     defstruct [
       :backlog,
+      :topic,
       :users
     ]
   end
 
   def start_link(name) do
     GenServer.start_link(__MODULE__, name)
+  end
+
+  def get_topic(pid) do
+    GenServer.call(pid, :get_topic)
   end
 
   def get_users(pid) do
@@ -32,8 +38,14 @@ defmodule PhoenixChat.Channel do
     {:ok,
      %State{
        backlog: [],
+       topic: "",
        users: %{}
      }}
+  end
+
+  @impl true
+  def handle_call(:get_topic, _from, %State{topic: topic} = state) do
+    {:reply, topic, state}
   end
 
   @impl true
@@ -44,6 +56,15 @@ defmodule PhoenixChat.Channel do
   @impl true
   def handle_call(:get_backlog, _from, %State{backlog: backlog} = state) do
     {:reply, backlog, state}
+  end
+
+  @impl true
+  def handle_info(%ChangeTopic{} = change_topic, %State{backlog: backlog} = state) do
+    %ChangeTopic{
+      topic: topic
+    } = change_topic
+
+    {:noreply, %State{state | backlog: [change_topic | backlog], topic: topic}}
   end
 
   @impl true
