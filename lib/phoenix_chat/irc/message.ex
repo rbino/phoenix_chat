@@ -5,4 +5,10 @@ defmodule PhoenixChat.IRC.Message do
     params: [],
     tags: %{}
   ]
+
+  alias PhoenixChat.IRC.Message
+
+  def new(opts) do
+    struct(Message, opts)
+  end
 end
