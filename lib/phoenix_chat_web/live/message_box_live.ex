@@ -1,12 +1,16 @@
 defmodule PhoenixChatWeb.MessageBoxLive do
   use Phoenix.LiveView, container: {:div, class: "col h-100"}
 
+  alias PhoenixChat.Chat.ChangeTopic
+  alias PhoenixChat.Chat.Join
+  alias PhoenixChat.Chat.Leave
   alias PhoenixChat.Chat.Message
-  alias PhoenixChat.Chat.User
   alias PhoenixChatWeb.MessageBoxView
 
   def mount(_session, socket) do
-    Process.send_after(self(), :do_ping, 1000)
+    user = %PhoenixChat.Chat.User{user: "foo", nick: "foo"}
+    PhoenixChat.Chat.join_chan("#test", user)
+
     {:ok, assign(socket, messages: [])}
   end
 
@@ -14,46 +18,16 @@ defmodule PhoenixChatWeb.MessageBoxLive do
     MessageBoxView.render("message_box.html", assigns)
   end
 
-  def handle_info(:do_ping, socket) do
-    sender = %User{
-      user: "Ping User",
-      nick: "ping_user"
-    }
-
-    id = socket.assigns[:message_id] || 0
-
-    message = %Message{
-      id: id,
-      timestamp: DateTime.utc_now(),
-      sender: sender,
-      destination: "#foo",
-      text: "Ping"
-    }
-
-    send(self(), message)
-    Process.send_after(self(), :do_pong, 1000)
-    {:noreply, assign(socket, message_id: id + 1)}
+  def handle_info(%ChangeTopic{} = _change, socket) do
+    {:noreply, socket}
   end
 
-  def handle_info(:do_pong, socket) do
-    sender = %User{
-      user: "Pong User",
-      nick: "pong_user"
-    }
+  def handle_info(%Join{} = _join, socket) do
+    {:noreply, socket}
+  end
 
-    id = socket.assigns[:message_id]
-
-    message = %Message{
-      id: id,
-      timestamp: DateTime.utc_now(),
-      sender: sender,
-      destination: "#foo",
-      text: "Pong"
-    }
-
-    send(self(), message)
-    Process.send_after(self(), :do_ping, 1000)
-    {:noreply, assign(socket, message_id: id + 1)}
+  def handle_info(%Leave{} = _leave, socket) do
+    {:noreply, socket}
   end
 
   def handle_info(%Message{} = message, socket) do
