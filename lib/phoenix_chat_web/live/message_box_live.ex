@@ -17,6 +17,7 @@ defmodule PhoenixChatWeb.MessageBoxLive do
       |> assign(messages: [])
       |> assign(user: user)
       |> assign(chan: "#test")
+      |> assign(input_reset_id: UUID.uuid1())
 
     {:ok, socket}
   end
@@ -33,6 +34,10 @@ defmodule PhoenixChatWeb.MessageBoxLive do
 
     Message.new(user, chan, text)
     |> Chat.send_message()
+
+    socket =
+      socket
+      |> assign(input_reset_id: UUID.uuid1())
 
     {:noreply, socket}
   end
