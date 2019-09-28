@@ -1,5 +1,5 @@
 defmodule PhoenixChatWeb.MessageBoxLive do
-  use Phoenix.LiveView
+  use Phoenix.LiveView, container: {:div, class: "col h-100"}
 
   alias PhoenixChat.Chat.Message
   alias PhoenixChat.Chat.User

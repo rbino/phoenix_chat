@@ -1,8 +1,17 @@
-<div id="message-box-container" phx-update="append">
-  <%= for message <- @messages do %>
-    <div id="message-<%= message.id %>">
-      <h4><%= message.sender.nick %> - <%= DateTime.to_iso8601(message.timestamp) %></h4>
-      <p><%= message.text %></p>
-    </div>
-  <% end %>
+<div id="message-box-wrapper" class="overflow-auto">
+  <div id="message-box-container" phx-update="append">
+    <%= for message <- @messages do %>
+      <%= render(PhoenixChatWeb.MessageView, "message.html", message: message) %>
+    <% end %>
+  </div>
 </div>
+<form id="message-form">
+  <div class="form-group row">
+    <div class="col-10">
+      <input class="form-control" placeholder="message">
+    </div>
+    <div class="col-2">
+      <button type="button" class="btn btn-primary">Send</button>
+    </div>
+  </div>
+</form>
