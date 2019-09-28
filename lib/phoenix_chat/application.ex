@@ -12,7 +12,9 @@ defmodule PhoenixChat.Application do
       PhoenixChatWeb.Endpoint,
       {Phoenix.PubSub.PG2, name: :chans},
       {DynamicSupervisor, strategy: :one_for_one, name: PhoenixChat.ChannelsSupervisor},
-      PhoenixChat.Channels
+      PhoenixChat.Channels,
+      PhoenixChat.IRC.Server,
+      {DynamicSupervisor, strategy: :one_for_one, name: PhoenixChat.IRC.Connection.Supervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
