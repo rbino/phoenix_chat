@@ -18,6 +18,10 @@ defmodule PhoenixChat.Channels do
     GenServer.call(Channels, {:get, channel_name})
   end
 
+  def get_channels_list() do
+    GenServer.call(Channels, :get_channels_list)
+  end
+
   def ensure(channel_name) do
     with {:ok, _chan} <- fetch(channel_name) do
       :ok
@@ -40,5 +44,10 @@ defmodule PhoenixChat.Channels do
       {:ok, channel} ->
         {:reply, {:ok, channel}, state}
     end
+  end
+
+  @impl true
+  def handle_call(:get_channels_list, _from, %State{channels: channels} = state) do
+    {:reply, {:ok, Map.keys(channels)}, state}
   end
 end
