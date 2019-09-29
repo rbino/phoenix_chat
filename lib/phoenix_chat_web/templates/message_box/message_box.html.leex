@@ -1,7 +1,7 @@
 <div id="message-box-wrapper" class="overflow-auto">
   <div id="message-box-container" phx-update="append">
     <%= for message <- @messages do %>
-      <%= render(PhoenixChatWeb.MessageView, "message.html", message: message) %>
+      <%= render(PhoenixChatWeb.MessageView, "any.html", message: message) %>
     <% end %>
   </div>
 </div>

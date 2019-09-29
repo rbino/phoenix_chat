@@ -46,16 +46,16 @@ defmodule PhoenixChatWeb.MessageBoxLive do
     {:noreply, socket}
   end
 
-  def handle_info(%ChangeTopic{} = _change, socket) do
-    {:noreply, socket}
+  def handle_info(%ChangeTopic{} = change_topic, socket) do
+    {:noreply, assign(socket, messages: [change_topic])}
   end
 
-  def handle_info(%Join{} = _join, socket) do
-    {:noreply, socket}
+  def handle_info(%Join{} = join, socket) do
+    {:noreply, assign(socket, messages: [join])}
   end
 
-  def handle_info(%Leave{} = _leave, socket) do
-    {:noreply, socket}
+  def handle_info(%Leave{} = leave, socket) do
+    {:noreply, assign(socket, messages: [leave])}
   end
 
   def handle_info(%Message{} = message, socket) do

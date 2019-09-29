@@ -1,5 +1,5 @@
 <div id="message-<%= @message.id %>" class="mb-1">
   <span class="message-time mr-1"><%= "#{@message.timestamp.year}/#{@message.timestamp.month}/#{@message.timestamp.day} #{@message.timestamp.hour}:#{@message.timestamp.minute}" %></span>
-  <span class="user-nick">&lt;<%= @message.sender.nick %>&gt;</span>
-  <span class="message-text"><%= @message.text %></span>
+  <span class="user-nick"><%= @message.sender.nick %></span>
+  <span class="message-text"> has joined <%= @message.channel %>.</span>
 </div>
