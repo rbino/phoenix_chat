@@ -1,59 +1,95 @@
 defmodule PhoenixChatWeb.MessageBoxLive do
   use Phoenix.LiveView, container: {:div, class: "col h-100"}
 
+  alias PhoenixChat.Channels
+  alias PhoenixChat.Chat
+  alias PhoenixChat.Chat.ChangeTopic
+  alias PhoenixChat.Chat.Join
+  alias PhoenixChat.Chat.Leave
   alias PhoenixChat.Chat.Message
-  alias PhoenixChat.Chat.User
   alias PhoenixChatWeb.MessageBoxView
 
   def mount(_session, socket) do
-    Process.send_after(self(), :do_ping, 1000)
-    {:ok, assign(socket, messages: [])}
+    user = %PhoenixChat.Chat.User{user: "foo", nick: "foo"}
+    PhoenixChat.Chat.join_chan("#test", user)
+
+    {:ok, chan} = Channels.fetch("#test")
+    chan_topic = PhoenixChat.Channel.get_topic(chan)
+    users_map = PhoenixChat.Channel.get_users(chan)
+
+    chan_users = Map.values(users_map)
+
+    socket =
+      socket
+      |> assign(messages: [])
+      |> assign(user: user)
+      |> assign(chan: "#test")
+      |> assign(chan_topic: chan_topic)
+      |> assign(chan_users: chan_users)
+      |> assign(input_reset_id: UUID.uuid1())
+
+    {:ok, socket}
   end
 
   def render(assigns) do
     MessageBoxView.render("message_box.html", assigns)
   end
 
-  def handle_info(:do_ping, socket) do
-    sender = %User{
-      user: "Ping User",
-      nick: "ping_user"
-    }
+  def handle_event("enter_message", %{"code" => "Enter", "value" => text} = _event, socket) do
+    %{
+      chan: chan,
+      user: user
+    } = socket.assigns
 
-    id = socket.assigns[:message_id] || 0
+    Message.new(user, chan, text)
+    |> Chat.send_message()
 
-    message = %Message{
-      id: id,
-      timestamp: DateTime.utc_now(),
-      sender: sender,
-      destination: "#foo",
-      text: "Ping"
-    }
+    socket =
+      socket
+      |> assign(input_reset_id: UUID.uuid1())
 
-    send(self(), message)
-    Process.send_after(self(), :do_pong, 1000)
-    {:noreply, assign(socket, message_id: id + 1)}
+    {:noreply, socket}
   end
 
-  def handle_info(:do_pong, socket) do
-    sender = %User{
-      user: "Pong User",
-      nick: "pong_user"
-    }
+  def handle_event("enter_message", _event, socket) do
+    {:noreply, socket}
+  end
 
-    id = socket.assigns[:message_id]
+  def handle_info(%ChangeTopic{topic: new_topic} = change_topic, socket) do
+    socket =
+      socket
+      |> assign(messages: [change_topic])
+      |> assign(chan_topic: new_topic)
 
-    message = %Message{
-      id: id,
-      timestamp: DateTime.utc_now(),
-      sender: sender,
-      destination: "#foo",
-      text: "Pong"
-    }
+    {:noreply, socket}
+  end
 
-    send(self(), message)
-    Process.send_after(self(), :do_ping, 1000)
-    {:noreply, assign(socket, message_id: id + 1)}
+  def handle_info(%Join{} = join, socket) do
+    users_list =
+      [join.sender.nick | socket.assigns[:chan_users]]
+      |> Enum.sort()
+      |> Enum.dedup()
+
+    socket =
+      socket
+      |> assign(messages: [join])
+      |> assign(chan_users: users_list)
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%Leave{} = leave, socket) do
+    users_list =
+      socket.assigns[:chan_users]
+      |> List.delete(leave.sender.nick)
+      |> Enum.sort()
+
+    socket =
+      socket
+      |> assign(messages: [leave])
+      |> assign(chan_users: users_list)
+
+    {:noreply, socket}
   end
 
   def handle_info(%Message{} = message, socket) do
