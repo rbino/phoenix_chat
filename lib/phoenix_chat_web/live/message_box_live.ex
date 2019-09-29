@@ -26,6 +26,7 @@ defmodule PhoenixChatWeb.MessageBoxLive do
       |> assign(chan: "#test")
       |> assign(chan_topic: chan_topic)
       |> assign(chan_users: chan_users)
+      |> assign(joined_chans: ["#test"])
       |> assign(input_reset_id: UUID.uuid1())
 
     {:ok, socket}
