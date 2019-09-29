@@ -1,3 +1,13 @@
+<div>
+  <p><%= @chan_topic %></p>
+</div>
+<div>
+  <ul>
+    <%= for user <- @chan_users do %>
+      <li><%= user %></li>
+    <% end %>
+  </ul>
+</div>
 <div id="message-box-wrapper" class="overflow-auto">
   <div id="message-box-container" phx-update="append">
     <%= for message <- @messages do %>

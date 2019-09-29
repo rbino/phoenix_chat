@@ -1,6 +1,7 @@
 defmodule PhoenixChatWeb.MessageBoxLive do
   use Phoenix.LiveView, container: {:div, class: "col h-100"}
 
+  alias PhoenixChat.Channels
   alias PhoenixChat.Chat
   alias PhoenixChat.Chat.ChangeTopic
   alias PhoenixChat.Chat.Join
@@ -12,11 +13,19 @@ defmodule PhoenixChatWeb.MessageBoxLive do
     user = %PhoenixChat.Chat.User{user: "foo", nick: "foo"}
     PhoenixChat.Chat.join_chan("#test", user)
 
+    {:ok, chan} = Channels.fetch("#test")
+    chan_topic = PhoenixChat.Channel.get_topic(chan)
+    users_map = PhoenixChat.Channel.get_users(chan)
+
+    chan_users = Map.values(users_map)
+
     socket =
       socket
       |> assign(messages: [])
       |> assign(user: user)
       |> assign(chan: "#test")
+      |> assign(chan_topic: chan_topic)
+      |> assign(chan_users: chan_users)
       |> assign(input_reset_id: UUID.uuid1())
 
     {:ok, socket}
@@ -46,16 +55,41 @@ defmodule PhoenixChatWeb.MessageBoxLive do
     {:noreply, socket}
   end
 
-  def handle_info(%ChangeTopic{} = change_topic, socket) do
-    {:noreply, assign(socket, messages: [change_topic])}
+  def handle_info(%ChangeTopic{topic: new_topic} = change_topic, socket) do
+    socket =
+      socket
+      |> assign(messages: [change_topic])
+      |> assign(chan_topic: new_topic)
+
+    {:noreply, socket}
   end
 
   def handle_info(%Join{} = join, socket) do
-    {:noreply, assign(socket, messages: [join])}
+    users_list =
+      [join.sender.nick | socket.assigns[:chan_users]]
+      |> Enum.sort()
+      |> Enum.dedup()
+
+    socket =
+      socket
+      |> assign(messages: [join])
+      |> assign(chan_users: users_list)
+
+    {:noreply, socket}
   end
 
   def handle_info(%Leave{} = leave, socket) do
-    {:noreply, assign(socket, messages: [leave])}
+    users_list =
+      socket.assigns[:chan_users]
+      |> List.delete(leave.sender.nick)
+      |> Enum.sort()
+
+    socket =
+      socket
+      |> assign(messages: [leave])
+      |> assign(chan_users: users_list)
+
+    {:noreply, socket}
   end
 
   def handle_info(%Message{} = message, socket) do
