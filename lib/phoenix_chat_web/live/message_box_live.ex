@@ -1,6 +1,8 @@
 defmodule PhoenixChatWeb.MessageBoxLive do
   use Phoenix.LiveView, container: {:section, class: "row h-100"}
 
+  require Logger
+
   alias PhoenixChat.Channels
   alias PhoenixChat.Chat
   alias PhoenixChat.Chat.ChangeTopic
@@ -65,6 +67,11 @@ defmodule PhoenixChatWeb.MessageBoxLive do
       |> change_active_chan(chan_name)
       |> assign(input_reset_id: UUID.uuid1())
 
+    {:noreply, socket}
+  end
+
+  defp handle_command(command, socket) do
+    Logger.info("Unhandled command:  #{command}")
     {:noreply, socket}
   end
 
