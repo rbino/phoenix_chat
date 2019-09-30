@@ -170,8 +170,7 @@ defmodule PhoenixChatWeb.MessageBoxLive do
 
     socket =
       if message.destination == active_chan do
-        socket
-        |> assign(socket, messages: [message])
+        assign(socket, messages: [message])
       else
         socket
       end
