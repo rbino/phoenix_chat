@@ -14,7 +14,8 @@ defmodule PhoenixChat.Application do
       {DynamicSupervisor, strategy: :one_for_one, name: PhoenixChat.ChannelsSupervisor},
       PhoenixChat.Channels,
       PhoenixChat.IRC.Server,
-      {DynamicSupervisor, strategy: :one_for_one, name: PhoenixChat.IRC.Connection.Supervisor}
+      {DynamicSupervisor, strategy: :one_for_one, name: PhoenixChat.IRC.Connection.Supervisor},
+      {Registry, name: PhoenixChat.UserRegistry, keys: :unique}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

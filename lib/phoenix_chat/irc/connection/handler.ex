@@ -9,6 +9,7 @@ defmodule PhoenixChat.IRC.Connection.Handler do
   alias PhoenixChat.Chat.Leave
   alias PhoenixChat.Chat.Message, as: PrivMsg
   alias PhoenixChat.Chat.User
+  alias PhoenixChat.UserRegistry
 
   @server_name "phoenixchat.local"
 
@@ -16,7 +17,17 @@ defmodule PhoenixChat.IRC.Connection.Handler do
     # TODO: check that nick is not already in use
     [nick] = msg.params
 
-    {:ok, %{data | nick: nick}}
+    case Registry.register(UserRegistry, {:nick, nick}, nil) do
+      {:ok, _pid} ->
+        {:ok, %{data | nick: nick}}
+
+      {:error, {:already_registered, _pid}} ->
+        err_params = ["*", nick, "Nickname is already in use"]
+        err_msg = Message.new(command: "433", params: err_params)
+        :ok = send_message(data.socket, err_msg)
+
+        :ok
+    end
   end
 
   def handle_message(%Message{command: "USER"} = msg, data) do
@@ -169,6 +180,8 @@ defmodule PhoenixChat.IRC.Connection.Handler do
   end
 
   defp welcome_message(nick) do
+    user_count = Registry.count(UserRegistry)
+
     # TODO: brutally copy-pasted and adapted from freenode welcome message
     """
     :#{@server_name} 001 #{nick} :Welcome to the Phoenix Chat Internet Relay Chat Network #{nick}
@@ -178,13 +191,12 @@ defmodule PhoenixChat.IRC.Connection.Handler do
     :#{@server_name} 005 #{nick} CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstuz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode STATUSMSG=@+ CALLERID=g CASEMAPPING=rfc1459 :are supported by this server
     :#{@server_name} 005 #{nick} CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 DEAF=D FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: EXTBAN=$,ajrxz CLIENTVER=3.0 SAFELIST ELIST=CTU KNOCK :are supported by this server
     :#{@server_name} 005 #{nick} CPRIVMSG CNOTICE WHOX ETRACE :are supported by this server
-    :#{@server_name} 251 #{nick} :There are 0 users and 0 invisible on 1 servers
+    :#{@server_name} 251 #{nick} :There are #{user_count} users and 0 invisible on 1 servers
     :#{@server_name} 252 #{nick} 0 :IRC Operators online
-    :#{@server_name} 253 #{nick} 0 :unknown connection(s)
     :#{@server_name} 254 #{nick} 0 :channels formed
-    :#{@server_name} 255 #{nick} :I have 0 clients and 1 servers
-    :#{@server_name} 265 #{nick} 0 8096 :Current local users 0, max 8096
-    :#{@server_name} 266 #{nick} 0 94773 :Current global users 0, max 94773
+    :#{@server_name} 255 #{nick} :I have #{user_count} clients and 1 servers
+    :#{@server_name} 265 #{nick} #{user_count} 8096 :Current local users #{user_count}, max 8096
+    :#{@server_name} 266 #{nick} #{user_count} 94773 :Current global users #{user_count}, max 94773
     :#{@server_name} 250 #{nick} :Highest connection count: 8087 (8086 clients) (1847605 connections received)
     :#{@server_name} 375 #{nick} :- #{@server_name} Message of the Day -
     :#{@server_name} 372 #{nick} :- IRC |> Phoenix LiveView
