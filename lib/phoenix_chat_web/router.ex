@@ -17,7 +17,7 @@ defmodule PhoenixChatWeb.Router do
   scope "/", PhoenixChatWeb do
     pipe_through :browser
 
-    live("/", PhoenixChatLive)
+    live("/", MessageBoxLive)
   end
 
   # Other scopes may use custom stacks.
