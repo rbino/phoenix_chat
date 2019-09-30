@@ -30,3 +30,10 @@
     <% end %>
   </ul>
 </div>
+<div>
+  <ul>
+    <%= for joined_chan <- @joined_chans do %>
+      <li><a phx-click="change_chan" phx-value-chan="<%= joined_chan %>"><%= joined_chan %></a></li>
+    <% end %>
+  </ul>
+</div>
