@@ -9,6 +9,7 @@ defmodule PhoenixChat.IRC.Connection.Handler do
   alias PhoenixChat.Chat.Leave
   alias PhoenixChat.Chat.Message, as: PrivMsg
   alias PhoenixChat.Chat.User
+  alias PhoenixChat.UserRegistry
 
   @server_name "phoenixchat.local"
 
@@ -16,7 +17,17 @@ defmodule PhoenixChat.IRC.Connection.Handler do
     # TODO: check that nick is not already in use
     [nick] = msg.params
 
-    {:ok, %{data | nick: nick}}
+    case Registry.register(UserRegistry, {:nick, nick}, nil) do
+      {:ok, _pid} ->
+        {:ok, %{data | nick: nick}}
+
+      {:error, {:already_registered, _pid}} ->
+        err_params = ["*", nick, "Nickname is already in use"]
+        err_msg = Message.new(command: "433", params: err_params)
+        :ok = send_message(data.socket, err_msg)
+
+        :ok
+    end
   end
 
   def handle_message(%Message{command: "USER"} = msg, data) do
